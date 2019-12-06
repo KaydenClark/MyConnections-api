@@ -1,0 +1,22 @@
+{
+  "name": "apiapp",
+  "version": "1.0.0",
+  "description": "express for toDoList",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js app.js .env"
+  },
+  "proxy": "http://localhost:5000/",
+  "author": "Kayden Clark",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.585.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "mongodb": "^3.3.5",
+    "mongoose": "^5.7.13",
+    "zlib": "^1.0.5"
+  }
+}
