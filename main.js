@@ -16,7 +16,7 @@ const {deleteList} = require('./app.js')
 
 const port = process.env.PORT || 5000
 
-// The "Database"
+// The "Database" we are making changes
 
 app.use(express.json());
 app.use(cors());
