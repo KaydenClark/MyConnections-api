@@ -1,5 +1,6 @@
 const express = require('express')
 const cors = require('cors')
+const bcrypt = require('bcryptjs')
 
 const app = express()
 
@@ -12,6 +13,7 @@ const {newList} = require('./app.js')
 const {readLists} = require('./app.js')
 const {updateList} = require('./app.js')
 const {deleteList} = require('./app.js')
+const {newUser} = require('./routes/signIn/signInMongo')
 
 const port = process.env.PORT || 5000
 
@@ -79,6 +81,15 @@ app.delete('/tasks', async (req, res) => {
     const task = req.body
     const removeTask = await deleteTask(task.listTitle)
     res.send(removeTask)
+})
+
+app.post('/signin', async(req, res) => {
+    const userData = req.body
+    const email = userData.userEmail
+    const hash = userData.password
+    console.log(email, hash)
+    const userInfo = await newUser(email, hash)
+    res.send(userInfo)
 })
 
 
