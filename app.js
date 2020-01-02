@@ -116,7 +116,7 @@ const readTaskById = (id) => {
             if (err) {
                 reject(err)
             } else {
-                console.log("Connected to server Read Contacts");
+                // console.log("Connected to server Read Contacts");
 
                 const db = client.db(dbName);
                 // Get the tasks collection
@@ -126,6 +126,40 @@ const readTaskById = (id) => {
                     if (err) {
                         reject(err)
                     } else {
+                        // console.log(docs[0])
+                        const results = {
+                            data: docs[0],
+                            msg: "Found the following records"
+                        }
+
+                        client.close();
+                        resolve(results);
+                    }
+                });
+            }
+        });
+    })
+    return iou;
+}
+
+const readListById = (id) => {
+    let iou = new Promise((resolve, reject) => {
+        // Use connect method to connect to the server
+        MongoClient.connect(url, settings, function (err, client) {
+            if (err) {
+                reject(err)
+            } else {
+                // console.log("Connected to server Read Contacts");
+
+                const db = client.db(dbName);
+                // Get the tasks collection
+                const collection = db.collection('ToDoLists');
+                // Find some documents
+                collection.find({ _id: ObjectId(id) }).toArray(function (err, docs) {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        // console.log(docs[0])
                         const results = {
                             data: docs[0],
                             msg: "Found the following records"
@@ -196,6 +230,7 @@ const readFilteredLists = () => {
                                 let todoTasks = []
                                 for(j = 0; j < docs[i].todos.length; j++){
                                     const task = await readTaskById(docs[i].todos[j])
+                                    // console.log(task.data.title)
                                     todoTasks.push(task.data.title)
                                 }
                                 listList.push(
@@ -316,7 +351,7 @@ const updateList = (id, todos) => {
     return iou
 }
 
-const deleteTask = (task) => {
+const deleteTask = (taskId) => {
     let iou = new Promise ((resolve, reject) => {
         // Use connect method to connect to the server
         MongoClient.connect(url, settings, function (err, client) {
@@ -328,8 +363,8 @@ const deleteTask = (task) => {
                 // Get the contacts collection
                 const collection = db.collection('ToDoTasks');
                 // Insert a document
-                collection.deleteMany({ 'listTitle': task },
-                    function (err, result) {
+                collection.deleteOne({ '_id': ObjectId(taskId) },
+                    function (err, docs) {
                         if(err){
                             reject(err)
                         } else {
@@ -344,7 +379,7 @@ const deleteTask = (task) => {
     return iou
 };
 
-const deleteList = (list) => {
+const deleteList = (listId) => {
     let iou = new Promise ((resolve, reject) => {
         // Use connect method to connect to the server
         MongoClient.connect(url, settings, function (err, client) {
@@ -356,15 +391,30 @@ const deleteList = (list) => {
                 // Get the contacts collection
                 const collection = db.collection('ToDoLists');
                 // Insert a document
-                collection.deleteMany({ 'title': list },
-                    function (err, result) {
-                        if(err){
-                            reject(err)
-                        } else {
-                            client.close();
-                            resolve("Delete documents in the collection")
-                        }
-                        
+                collection.find({ _id: ObjectId(listId) }).toArray(function (err, docs) {
+                    if (err) {
+                        reject(err)
+                    } else {
+                        const removeListTasks = async () => {
+                            for(i = 0; i < docs.length; i++){
+                                for(j = 0; j < docs[i].todos.length; j++){
+                                    console.log('Task being delted')
+                                    await deleteTask(docs[i].todos[j])
+                                }
+                            }
+                        } //removeListTasks
+                        removeListTasks()}
+                        collection.deleteOne({ '_id': ObjectId(listId) },
+                        function (err, result) {
+                            if(err){
+                                reject(err)
+                            } else {
+                                // console.log(result)
+                                client.close();
+                                resolve("deleted list and its tasks")
+                            }
+                            
+                        });
                     });
             }          
        }); 
@@ -373,4 +423,4 @@ const deleteList = (list) => {
 };
 
 
-module.exports = {testConnection, newTask, readTasks, updateTask, deleteTask, newList, readLists, readFilteredLists, updateList, deleteList}
+module.exports = {testConnection, newTask, readTasks, readTaskById, readListById, updateTask, deleteTask, newList, readLists, readFilteredLists, updateList, deleteList}

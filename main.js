@@ -15,6 +15,8 @@ const {readFilteredLists} = require('./app.js')
 const {updateList} = require('./app.js')
 const {deleteList} = require('./app.js')
 const {newUser} = require('./routes/signIn/signInMongo')
+const {readTaskById} = require('./app.js')
+const {readListById} = require('./app.js')
 
 const port = process.env.PORT || 5000
 
@@ -38,6 +40,18 @@ app.get('/tasks', async (req, res) => {
     tasks = await readTasks()
     res.send(tasks)
 });
+
+app.get('/tasks/:taskId', async (req, res) => {
+    const taskId = req.params.taskId
+    const task = await readTaskById(taskId)
+    res.send(task)
+});
+
+app.get('/Lists/:listId', async (req, res) => {
+    const listId = req.params.listId
+    const list = await readListById(listId)
+    res.send(list)
+})
 
 app.post('/lists', async (req, res) => {
     const new_list = req.body
@@ -76,17 +90,17 @@ app.patch('/tasks/status/:id', async (req, res) => {
     res.send()
 })
 
-app.delete('/lists', async (req, res) => {
+app.delete('/lists/:listId', async (req, res) => {
     await testConnection()
-    const list = req.body
-    const removeList = await deleteList(list.title)
+    const listId = req.params.listId
+    const removeList = await deleteList(listId)
     res.send(removeList)
 })
 
-app.delete('/tasks', async (req, res) => {
+app.delete('/tasks/:taskId', async (req, res) => {
     await testConnection()
-    const task = req.body
-    const removeTask = await deleteTask(task.listTitle)
+    const taskId = req.params.taskId
+    const removeTask = await deleteTask(taskId)
     res.send(removeTask)
 })
 
