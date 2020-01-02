@@ -199,7 +199,9 @@ const readFilteredLists = () => {
                                     todoTasks.push(task.data.title)
                                 }
                                 listList.push(
-                                    {title : docs[i].title,
+                                    {
+                                    id : docs[i]._id,
+                                    title : docs[i].title,
                                     data : todoTasks})
                             }
                             return listList
