@@ -11,6 +11,7 @@ const {updateTask} = require('./app.js')
 const {deleteTask} = require('./app.js')
 const {newList} = require('./app.js')
 const {readLists} = require('./app.js')
+const {readFilteredLists} = require('./app.js')
 const {updateList} = require('./app.js')
 const {deleteList} = require('./app.js')
 const {newUser} = require('./routes/signIn/signInMongo')
@@ -21,10 +22,15 @@ const port = process.env.PORT || 5000
 
 app.use(express.json());
 app.use(cors());
-app.use(require('./routes'))
+// app.use(require('./routes'))
+
+app.get('/listsRaw', async (req, res) => {
+    lists = await readLists()
+    res.send(lists)
+});
 
 app.get('/lists', async (req, res) => {
-    lists = await readLists()
+    lists = await readFilteredLists()
     res.send(lists)
 });
 
